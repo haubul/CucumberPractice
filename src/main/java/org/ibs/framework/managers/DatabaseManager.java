@@ -41,16 +41,13 @@ public class DatabaseManager {
      */
 
     public boolean isProductInDatabase(String name, String type, int exotic) throws SQLException {
-        String query = "SELECT food_name, food_type, food_exotic FROM FOOD WHERE food_name = ?";
+        String query = "SELECT food_name, food_type, food_exotic FROM FOOD WHERE food_name = ? AND food_type = ? AND food_exotic = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, name);
+            statement.setString(2, type);
+            statement.setInt(3, exotic);
             ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString("food_name").equals(name) &&
-                        resultSet.getString("food_type").equals(type) &&
-                        resultSet.getInt("food_exotic") == exotic;
-            }
-            return false;
+            return resultSet.next();
         }
     }
 
