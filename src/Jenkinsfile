@@ -1,6 +1,6 @@
 node {
     stage('Git checkout') {
-        checkout scmGit(branches: [[name: '*/jenkins']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/haubul/CucumberPractice']])
+        checkout scm
     }
     stage('Run tests') {
         withMaven(globalMavenSettingsConfig: '', jdk: '', maven: 'Default', mavenSettingsConfig: '', traceability: true) {
