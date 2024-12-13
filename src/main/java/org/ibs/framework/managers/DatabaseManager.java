@@ -1,10 +1,6 @@
 package org.ibs.framework.managers;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Класс для управления базой данных
@@ -16,20 +12,56 @@ public class DatabaseManager {
      * Переменная для хранения объекта соединения
      */
 
-    private final Connection connection;
+    private Connection connection;
+
+    private static final TestPropManager props = TestPropManager.getTestPropManager();
+
+    public DatabaseManager() throws SQLException {
+        initDatabase();
+        createFoodTableIfNotExists();
+    }
+
+
+    private void createFoodTableIfNotExists() throws SQLException {
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS FOOD (" +
+                "food_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "food_name VARCHAR(255) NOT NULL, " +
+                "food_type VARCHAR(255) NOT NULL, " +
+                "food_exotic INT NOT NULL" +
+                ")";
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(createTableSQL);
+        }
+    }
+    public void initDatabase() throws SQLException {
+        if ("remote".equalsIgnoreCase(props.getProperty("type.db"))){
+            initRemoteDatabase();
+        } else{
+            initLocalDatabase();
+        }
+    }
 
     /**
      *  Инициализирует соединение с базой данных
      * @throws SQLException - если возникает ошибка при соединении с базой данных
      */
 
-    public DatabaseManager() throws SQLException {
+    public void initLocalDatabase() throws SQLException {
         connection = DriverManager.getConnection(
                 "jdbc:h2:tcp://localhost:9092/mem:testdb",
                 "user",
                 "pass"
         );
     }
+
+    public void initRemoteDatabase() throws  SQLException {
+        connection = DriverManager.getConnection(
+                "jdbc:h2:mem:testdb",
+                "user",
+                "pass"
+        );
+    }
+
 
     /**
      * Проверяет, существует ли товар с заданными параметрами в базе данных
@@ -51,20 +83,6 @@ public class DatabaseManager {
         }
     }
 
-
-    /**
-     * Удаляет товар с заданными параметрами из базы данных
-     * @param name - название товара
-     * @throws SQLException - если возникает ошибка при выполнении запроса к базе данных
-     */
-
-    public void deleteProductFromDatabase(String name) throws SQLException {
-        String query = "DELETE FROM FOOD WHERE food_name = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, name);
-            statement.executeUpdate();
-        }
-    }
 
     /**
      * Закрывает соединение с базой данных

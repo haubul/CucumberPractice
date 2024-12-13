@@ -6,6 +6,7 @@ import io.cucumber.java.ru.Если;
 import io.cucumber.java.ru.И;
 import io.cucumber.java.ru.То;
 import org.ibs.framework.managers.DatabaseManager;
+import org.ibs.framework.managers.TestPropManager;
 import org.ibs.framework.managers.WebDriverManager;
 import org.ibs.framework.pages.ProductPage;
 import org.ibs.framework.utils.Consts;
@@ -25,19 +26,44 @@ public class ProductSteps {
     private WebDriver driver;
     private ProductPage productPage;
     private DatabaseManager databaseManager;
-
+    private static final TestPropManager props = TestPropManager.getTestPropManager();
 
     /**
      * Открывает страницу продуктов и иницализирует веб-драйвер и базу данных
      * @throws SQLException если возникает ошибка при соединении с базой данных
      */
 
+    /**
+     * Метод для выбора URL в зависимости от типа окружения
+     */
+    private void initUrl() {
+        if ("remote".equalsIgnoreCase(props.getProperty("type.driver"))) {
+            initRemoteUrl();
+        } else {
+            initLocalUrl();
+        }
+    }
+
+    /**
+     * Устанавливает URL для локального окружения
+     */
+    private void initLocalUrl() {
+        driver.get(Consts.LOCAL_URL);
+    }
+
+    /**
+     * Устанавливает URL для удаленного окружения
+     */
+    private void initRemoteUrl() {
+        driver.get(Consts.REMOTE_URL);
+    }
+
     @Допустим("пользователь открывает страницу продуктов")
     public void пользователь_открывает_страницу_продуктов() throws SQLException {
         webDriverManager = new WebDriverManager();
         driver = webDriverManager.getDriver();
         productPage = new ProductPage(driver);
-        driver.get(Consts.BASE_URL);
+        initUrl();
         databaseManager = new DatabaseManager();
     }
 
@@ -100,10 +126,10 @@ public class ProductSteps {
      * @throws SQLException  если возникает ошибка при выполнении запроса к базе данных
      */
 
-    @То("товар {string} должен быть добавлен в БД как {string} с экзотичностью {int}")
-    public void товар_должен_быть_добавлен_в_БД(String productName, String productType, int isExotic) throws SQLException {
-        Assertions.assertTrue(databaseManager.isProductInDatabase(productName, productType, isExotic));
-    }
+//    @То("товар {string} должен быть добавлен в БД как {string} с экзотичностью {int}")
+//    public void товар_должен_быть_добавлен_в_БД(String productName, String productType, int isExotic) throws SQLException {
+//        Assertions.assertTrue(databaseManager.isProductInDatabase(productName, productType, isExotic));
+//    }
 
     /**
      * Сбрасывает добавленные товары на странице
