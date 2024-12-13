@@ -1,0 +1,13 @@
+node {
+    stage('Git checkout') {
+        checkout scmGit(branches: [[name: '*/jenkins']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/haubul/CucumberPractice']])
+    }
+    stage('Run tests') {
+        withMaven(globalMavenSettingsConfig: '', jdk: '', maven: 'Default', mavenSettingsConfig: '', traceability: true) {
+            sh 'mvn clean test -Dtype.browser${browser}'
+        }
+    }
+    stage('Allure') {
+        allure includeProperties: false, jdk: '', results: [[path: 'target/reports/allure-results']]
+    }
+}
