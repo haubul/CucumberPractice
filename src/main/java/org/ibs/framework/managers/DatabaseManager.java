@@ -18,21 +18,8 @@ public class DatabaseManager {
 
     public DatabaseManager() throws SQLException {
         initDatabase();
-        createFoodTableIfNotExists();
     }
 
-
-    private void createFoodTableIfNotExists() throws SQLException {
-        String createTableSQL = "CREATE TABLE IF NOT EXISTS FOOD (" +
-                "food_id INT AUTO_INCREMENT PRIMARY KEY, " +
-                "food_name VARCHAR(255) NOT NULL, " +
-                "food_type VARCHAR(255) NOT NULL, " +
-                "food_exotic INT NOT NULL" +
-                ")";
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(createTableSQL);
-        }
-    }
     public void initDatabase() throws SQLException {
         if ("remote".equalsIgnoreCase(props.getProperty("type.db"))){
             initRemoteDatabase();
@@ -56,7 +43,7 @@ public class DatabaseManager {
 
     public void initRemoteDatabase() throws  SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:h2:mem:testdb",
+                "jdbc:h2:tcp://qualit.applineselenoid.fvds.ru/mem:testdb",
                 "user",
                 "pass"
         );

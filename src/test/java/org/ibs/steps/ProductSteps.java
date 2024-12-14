@@ -126,10 +126,10 @@ public class ProductSteps {
      * @throws SQLException  если возникает ошибка при выполнении запроса к базе данных
      */
 
-//    @То("товар {string} должен быть добавлен в БД как {string} с экзотичностью {int}")
-//    public void товар_должен_быть_добавлен_в_БД(String productName, String productType, int isExotic) throws SQLException {
-//        Assertions.assertTrue(databaseManager.isProductInDatabase(productName, productType, isExotic));
-//    }
+    @То("товар {string} должен быть добавлен в БД как {string} с экзотичностью {int}")
+    public void товар_должен_быть_добавлен_в_БД(String productName, String productType, int isExotic) throws SQLException {
+        Assertions.assertTrue(databaseManager.isProductInDatabase(productName, productType, isExotic));
+    }
 
     /**
      * Сбрасывает добавленные товары на странице
